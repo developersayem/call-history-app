@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Filter, } from "lucide-react";
+import { CirclePlus, Filter } from "lucide-react";
 
 const fields = [
   "Agent", "Call ID", "Batch Call ID", "Type", "Call Duration", "From",
@@ -32,10 +32,10 @@ export default function FilterDropdown() {
 
 
       {isOpen && (
-        <div className="absolute bg-white shadow-lg p-2 rounded-lg w-64 mt-10 border">
+        <div className="absolute bg-white shadow-lg p-2 rounded-lg w-64 mt-12 border border-gray-300">
           {fields.map((field) => (
             <div key={field} className="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
-              <ChevronDown size={14} className="mr-2" />
+              <CirclePlus size={14} className="mr-2" />
               {field}
             </div>
           ))}

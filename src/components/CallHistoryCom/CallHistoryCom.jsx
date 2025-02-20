@@ -86,7 +86,7 @@ export default function CallHistory() {
                     Customize Field
                 </button>
                 {isDropdownOpen && (
-                    <div className="w-fit absolute left-72 top-34 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
+                    <div className="w-fit absolute left-76 top-34 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
                         {allFields.map(field => (
                             <label key={field} className="flex items-center text-black space-x-2 py-1">
                                 <input type="checkbox" checked={selectedFields.includes(field)} onChange={() => toggleField(field)} />
