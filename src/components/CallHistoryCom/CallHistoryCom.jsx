@@ -5,16 +5,30 @@ import { ChevronLeftIcon, ChevronRightIcon, FilterIcon, Settings2Icon } from "lu
 import callHistoryData from "../../data/call-data.js"
 import DateRangePicker from "./DateRangePicker.js"
 
+
+const allFields = [
+    "Time", "Call Duration", "Type", "Cost", "Call ID",
+    "Disconnection Reason", "Call Status", "User Sentiment",
+    "From", "To", "Call Successful", "End to End Latency"
+];
 export default function CallHistory() {
     // const [dateRange, setDateRange] = useState("Date Range")
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(10)
+    const [selectedFields, setSelectedFields] = useState(allFields);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
     const currentCalls = callHistoryData.slice(indexOfFirstItem, indexOfLastItem)
 
     const totalPages = Math.ceil(callHistoryData.length / itemsPerPage)
+
+    const toggleField = (field) => {
+        setSelectedFields(prev =>
+            prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]
+        );
+    };
 
     const pageNumbers = useMemo(() => {
         const numbers = []
@@ -51,13 +65,7 @@ export default function CallHistory() {
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Call History</h2>
 
             <div className="flex flex-wrap items-center gap-4 mb-6">
-                {/* <button
-                    className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    onClick={() => setDateRange("Custom Date Range")}
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange}
-                </button> */}
+
                 <DateRangePicker />
 
                 <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -65,10 +73,20 @@ export default function CallHistory() {
                     Filter
                 </button>
 
-                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button className="flex items-center px-4 py-2 bg-white border rounded-md shadow-sm" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                     <Settings2Icon className="mr-2 h-4 w-4" />
                     Customize Field
                 </button>
+                {isDropdownOpen && (
+                    <div className="w-fit absolute left-64 top-32 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
+                        {allFields.map(field => (
+                            <label key={field} className="flex items-center text-black space-x-2 py-1">
+                                <input type="checkbox" checked={selectedFields.includes(field)} onChange={() => toggleField(field)} />
+                                <span>{field}</span>
+                            </label>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -76,59 +94,59 @@ export default function CallHistory() {
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                {[
-                                    "Time",
-                                    "Call Duration",
-                                    "Type",
-                                    "Cost",
-                                    "Call ID",
-                                    "Disconnection Reason",
-                                    "Call Status",
-                                    "User Sentiment",
-                                    "From",
-                                    "To",
-                                    "Call Successful",
-                                    "End to End Latency",
-                                ].map((header) => (
-                                    <th
-                                        key={header}
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        {header}
-                                    </th>
+                                {selectedFields.map(header => (
+                                    <th key={header} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{header}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentCalls.map((call, index) => (
-                                <tr key={call.callId} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.time}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.duration}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.type}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.cost}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">{call.callId}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                            {currentCalls.map(call => (
+                                <tr key={call.callId}>
+                                    {selectedFields.includes("Time") && <td className="px-6 py-4 text-sm text-gray-500">{call.time}</td>}
+                                    {selectedFields.includes("Call Duration") && <td className="px-6 py-4 text-sm text-gray-500">{call.duration}</td>}
+                                    {selectedFields.includes("Type") && <td className="px-6 py-4 text-sm text-gray-500">{call.type}</td>}
+                                    {selectedFields.includes("Cost") && <td className="px-6 py-4 text-sm text-gray-500">{call.cost}</td>}
+                                    {selectedFields.includes("Call ID") && <td className="px-6 py-4 text-sm text-gray-500">{call.callId}</td>}
+                                    {selectedFields.includes("Disconnection Reason") && <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <span className={`h-2 w-2 rounded-full mr-2 ${getStatusDotColor(call.callStatus)}`}></span>
                                             <span className="text-sm text-gray-500">{call.disconnectionReason}</span>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    </td>}
+                                    {selectedFields.includes("Call Status") && <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`text-sm ${getTextColor(call.callStatus)}`}>{call.callStatus}</span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.userSentiment}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">{call.from}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">{call.to}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    </td>}
+                                    {selectedFields.includes("User Sentiment") && <td className="px-6 py-4 text-sm text-gray-500">{call.userSentiment}</td>}
+                                    {selectedFields.includes("From") && <td className="px-6 py-4 text-sm text-gray-500">{call.from}</td>}
+                                    {selectedFields.includes("To") && <td className="px-6 py-4 text-sm text-gray-500">{call.to}</td>}
+                                    {selectedFields.includes("Call Successful") && <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`text-sm ${getTextColor(call.callSuccessful)}`}>{call.callSuccessful}</span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{call.latency || "-"}</td>
+                                    </td>}
+                                    {selectedFields.includes("End to End Latency") && <td className="px-6 py-4 text-sm text-gray-500">{call.latency || "-"}</td>}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+
+            {/* 
+ <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center">
+                                            <span className={`h-2 w-2 rounded-full mr-2 ${getStatusDotColor(call.callStatus)}`}></span>
+                                            <span className="text-sm text-gray-500">{call.disconnectionReason}</span>
+                                        </div>
+                                    </td>
+ <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`text-sm ${getTextColor(call.callStatus)}`}>{call.callStatus}</span>
+                                    </td>
+
+<td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`text-sm ${getTextColor(call.callSuccessful)}`}>{call.callSuccessful}</span>
+                                    </td>
+*/}
+
 
             <div className="flex flex-wrap items-center justify-between mt-4">
                 <button
