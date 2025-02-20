@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { ChevronLeftIcon, ChevronRightIcon, Settings2Icon } from "lucide-react"
 import callHistoryData from "../../data/call-data.js"
 import DateRangePicker from "./DateRangePicker.jsx"
@@ -18,6 +18,19 @@ export default function CallHistory() {
     const [itemsPerPage] = useState(10)
     const [selectedFields, setSelectedFields] = useState(allFields);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
@@ -61,18 +74,14 @@ export default function CallHistory() {
         }
     }
 
+
     return (
         <div className="p-6 bg-gray-50">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Call History</h2>
-
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-
+            <div className="flex flex-wrap items-center gap-4 mb-6" >
                 <DateRangePicker />
-
-
                 <FilterDropdownCom />
-
-                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 " onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 " onClick={() => setIsDropdownOpen(!isDropdownOpen)} ref={dropdownRef}>
                     <Settings2Icon className="mr-2 h-4 w-4" />
                     Customize Field
                 </button>
@@ -128,25 +137,6 @@ export default function CallHistory() {
                     </table>
                 </div>
             </div>
-
-
-            {/* 
- <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <span className={`h-2 w-2 rounded-full mr-2 ${getStatusDotColor(call.callStatus)}`}></span>
-                                            <span className="text-sm text-gray-500">{call.disconnectionReason}</span>
-                                        </div>
-                                    </td>
- <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`text-sm ${getTextColor(call.callStatus)}`}>{call.callStatus}</span>
-                                    </td>
-
-<td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`text-sm ${getTextColor(call.callSuccessful)}`}>{call.callSuccessful}</span>
-                                    </td>
-*/}
-
-
             <div className="flex flex-wrap items-center justify-between mt-4">
                 <button
                     className="flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"

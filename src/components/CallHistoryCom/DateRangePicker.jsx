@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -9,9 +9,22 @@ import { CalendarIcon } from "lucide-react";
 export default function DateRangePicker() {
   const [range, setRange] = useState({});
   const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className=" max-w-full">
+    <div className="max-w-full" ref={dropdownRef}>
       {/* Button to open calendar */}
       <button
         onClick={() => setOpen(!open)}
@@ -30,7 +43,7 @@ export default function DateRangePicker() {
       <div className="">
         {/* Calendar Popup */}
         {open && (
-          <div className=" w-fit absolute left-6 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
+          <div className="w-fit absolute left-6 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
             <DayPicker
               mode="range"
               selected={range}
