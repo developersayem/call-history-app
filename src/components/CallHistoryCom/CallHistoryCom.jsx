@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, FilterIcon, Settings2Icon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, FilterIcon, Settings2Icon } from "lucide-react"
 import callHistoryData from "../../data/call-data.js"
+import DateRangePicker from "./DateRangePicker.js"
 
 export default function CallHistory() {
-    const [dateRange, setDateRange] = useState("Date Range")
+    // const [dateRange, setDateRange] = useState("Date Range")
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(10)
 
@@ -50,13 +51,14 @@ export default function CallHistory() {
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Call History</h2>
 
             <div className="flex flex-wrap items-center gap-4 mb-6">
-                <button
+                {/* <button
                     className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => setDateRange("Custom Date Range")}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange}
-                </button>
+                </button> */}
+                <DateRangePicker />
 
                 <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <FilterIcon className="mr-2 h-4 w-4" />
