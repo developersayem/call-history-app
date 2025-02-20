@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useMemo, useRef, useEffect } from "react"
-import { ChevronLeftIcon, ChevronRightIcon, Settings2Icon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, Settings2Icon, ClipboardIcon } from "lucide-react"
 import callHistoryData from "../../data/call-data.js"
 import DateRangePicker from "./DateRangePicker.jsx"
 import FilterDropdownCom from "./FilterDropdownCom.jsx"
 import { isWithinInterval, parseISO } from "date-fns"
+import { toast } from "sonner"
+import Drawer from "./Drawer.jsx" // Import the Drawer component
 
 const allFields = [
     "Time", "Call Duration", "Type", "Cost", "Call ID",
@@ -19,6 +21,9 @@ export default function CallHistory() {
     const [selectedFields, setSelectedFields] = useState(allFields);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+    const [hoveredCallId, setHoveredCallId] = useState(null);
+    const [selectedCall, setSelectedCall] = useState(null); // State for selected call
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State for drawer status
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -83,6 +88,19 @@ export default function CallHistory() {
         }
     }
 
+    const handleCopy = (callId, event) => {
+        event.stopPropagation(); // Prevents the row click event
+        navigator.clipboard.writeText(callId).then(() => {
+            toast("Call ID copied to clipboard!");
+        });
+    };
+    
+
+    const handleRowClick = (call) => {
+        setSelectedCall(call);
+        setIsDrawerOpen(true);
+    };
+
     return (
         <div className="p-6 bg-gray-50">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Call History</h2>
@@ -117,12 +135,26 @@ export default function CallHistory() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {currentCalls.map(call => (
-                                <tr key={call.callId}>
+                                <tr key={call.callId} onClick={() => handleRowClick(call)} className="cursor-pointer">
                                     {selectedFields.includes("Time") && <td className="px-6 py-4 text-sm text-gray-500">{call.time}</td>}
                                     {selectedFields.includes("Call Duration") && <td className="px-6 py-4 text-sm text-gray-500">{call.duration}</td>}
                                     {selectedFields.includes("Type") && <td className="px-6 py-4 text-sm text-gray-500">{call.type}</td>}
                                     {selectedFields.includes("Cost") && <td className="px-6 py-4 text-sm text-gray-500">{call.cost}</td>}
-                                    {selectedFields.includes("Call ID") && <td className="px-6 py-4 text-sm text-gray-500">{call.callId}</td>}
+                                    {selectedFields.includes("Call ID") && (
+                                        <td
+                                            className="items-center px-6 py-4 text-sm text-gray-500 relative"
+                                            onMouseEnter={() => setHoveredCallId(call.callId)}
+                                            onMouseLeave={() => setHoveredCallId(null)}
+                                        >
+                                            {call.callId}
+                                            {hoveredCallId === call.callId && (
+                                                <ClipboardIcon
+                                                className="absolute right-0 top-7 h-4 w-4 text-gray-400 cursor-pointer"
+                                                onClick={(e) => handleCopy(call.callId, e)} // Pass event
+                                            />
+                                            )}
+                                        </td>
+                                    )}
                                     {selectedFields.includes("Disconnection Reason") && <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <span className={`h-2 w-2 rounded-full mr-2 ${getStatusDotColor(call.callStatus)}`}></span>
@@ -175,6 +207,7 @@ export default function CallHistory() {
                     <ChevronRightIcon className="ml-2 h-4 w-4" />
                 </button>
             </div>
+            {isDrawerOpen && <Drawer call={selectedCall} onClose={() => setIsDrawerOpen(false)} />}
         </div>
     )
 }
