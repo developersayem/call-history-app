@@ -4,17 +4,10 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import React from "react";
 import { CalendarIcon } from "lucide-react";
 
 export default function DateRangePicker() {
-  const [range, setRange] = useState<{
-    from: Date | undefined;
-    to?: Date | undefined;
-  }>({
-    from: undefined,
-    to: undefined,
-  });
+  const [range, setRange] = useState({});
   const [open, setOpen] = useState(false);
 
   return (

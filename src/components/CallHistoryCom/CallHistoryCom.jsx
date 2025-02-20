@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronLeftIcon, ChevronRightIcon, FilterIcon, Settings2Icon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, Settings2Icon } from "lucide-react"
 import callHistoryData from "../../data/call-data.js"
-import DateRangePicker from "./DateRangePicker.js"
+import DateRangePicker from "./DateRangePicker.jsx"
+import FilterDropdownCom from "./FilterDropdownCom.jsx"
 
 
 const allFields = [
@@ -68,17 +69,15 @@ export default function CallHistory() {
 
                 <DateRangePicker />
 
-                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    <FilterIcon className="mr-2 h-4 w-4" />
-                    Filter
-                </button>
 
-                <button className="flex items-center px-4 py-2 bg-white border rounded-md shadow-sm" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <FilterDropdownCom />
+
+                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 " onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                     <Settings2Icon className="mr-2 h-4 w-4" />
                     Customize Field
                 </button>
                 {isDropdownOpen && (
-                    <div className="w-fit absolute left-64 top-32 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
+                    <div className="w-fit absolute left-72 top-34 mt-2 bg-white border border-gray-300 shadow-lg rounded-lg p-4">
                         {allFields.map(field => (
                             <label key={field} className="flex items-center text-black space-x-2 py-1">
                                 <input type="checkbox" checked={selectedFields.includes(field)} onChange={() => toggleField(field)} />
