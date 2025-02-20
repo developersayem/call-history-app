@@ -17,7 +17,7 @@ const allFields = [
 
 export default function CallHistory() {
     const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage] = useState(10)
+    const [itemsPerPage] = useState(20)
     const [selectedFields, setSelectedFields] = useState(allFields);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
@@ -94,7 +94,7 @@ export default function CallHistory() {
             toast("Call ID copied to clipboard!");
         });
     };
-    
+
 
     const handleRowClick = (call) => {
         setSelectedCall(call);
@@ -149,9 +149,9 @@ export default function CallHistory() {
                                             {call.callId}
                                             {hoveredCallId === call.callId && (
                                                 <ClipboardIcon
-                                                className="absolute right-0 top-7 h-4 w-4 text-gray-400 cursor-pointer"
-                                                onClick={(e) => handleCopy(call.callId, e)} // Pass event
-                                            />
+                                                    className="absolute right-0 top-7 h-4 w-4 text-gray-400 cursor-pointer"
+                                                    onClick={(e) => handleCopy(call.callId, e)} // Pass event
+                                                />
                                             )}
                                         </td>
                                     )}
@@ -190,7 +190,7 @@ export default function CallHistory() {
                     {pageNumbers.map((number) => (
                         <button
                             key={number}
-                            className={`px-3 py-1 rounded-md text-sm font-medium ${currentPage === number ? "bg-indigo-600 text-white" : "text-gray-700 hover:bg-gray-50"
+                            className={`px-3 py-1 rounded-md text-sm font-medium ${currentPage === number ? "bg-black text-white" : "text-gray-700 hover:bg-gray-50"
                                 }`}
                             onClick={() => setCurrentPage(number)}
                         >
