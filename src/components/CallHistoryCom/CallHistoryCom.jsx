@@ -5,19 +5,20 @@ import { ChevronLeftIcon, ChevronRightIcon, Settings2Icon } from "lucide-react"
 import callHistoryData from "../../data/call-data.js"
 import DateRangePicker from "./DateRangePicker.jsx"
 import FilterDropdownCom from "./FilterDropdownCom.jsx"
-
+import { isWithinInterval, parseISO } from "date-fns"
 
 const allFields = [
     "Time", "Call Duration", "Type", "Cost", "Call ID",
     "Disconnection Reason", "Call Status", "User Sentiment",
     "From", "To", "Call Successful", "End to End Latency"
 ];
+
 export default function CallHistory() {
-    // const [dateRange, setDateRange] = useState("Date Range")
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(10)
     const [selectedFields, setSelectedFields] = useState(allFields);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -32,11 +33,19 @@ export default function CallHistory() {
         };
     }, []);
 
+    const filteredCalls = useMemo(() => {
+        if (!dateRange.from || !dateRange.to) return callHistoryData;
+        return callHistoryData.filter(call => {
+            const callDate = parseISO(call.time);
+            return isWithinInterval(callDate, { start: dateRange.from, end: dateRange.to });
+        });
+    }, [dateRange]);
+
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentCalls = callHistoryData.slice(indexOfFirstItem, indexOfLastItem)
+    const currentCalls = filteredCalls.slice(indexOfFirstItem, indexOfFirstItem + itemsPerPage)
 
-    const totalPages = Math.ceil(callHistoryData.length / itemsPerPage)
+    const totalPages = Math.ceil(filteredCalls.length / itemsPerPage)
 
     const toggleField = (field) => {
         setSelectedFields(prev =>
@@ -74,14 +83,13 @@ export default function CallHistory() {
         }
     }
 
-
     return (
         <div className="p-6 bg-gray-50">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Call History</h2>
-            <div className="flex flex-wrap items-center gap-4 mb-6" >
-                <DateRangePicker />
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+                <DateRangePicker range={dateRange} setRange={setDateRange} />
                 <FilterDropdownCom />
-                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 " onClick={() => setIsDropdownOpen(!isDropdownOpen)} ref={dropdownRef}>
+                <button className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2" onClick={() => setIsDropdownOpen(!isDropdownOpen)} ref={dropdownRef}>
                     <Settings2Icon className="mr-2 h-4 w-4" />
                     Customize Field
                 </button>
@@ -170,4 +178,3 @@ export default function CallHistory() {
         </div>
     )
 }
-

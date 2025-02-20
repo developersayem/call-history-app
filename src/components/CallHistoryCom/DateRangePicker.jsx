@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { CalendarIcon } from "lucide-react";
 
-export default function DateRangePicker() {
-  const [range, setRange] = useState({});
+export default function DateRangePicker({ range, setRange }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -22,6 +22,14 @@ export default function DateRangePicker() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  DateRangePicker.propTypes = {
+    range: PropTypes.shape({
+      from: PropTypes.instanceOf(Date),
+      to: PropTypes.instanceOf(Date),
+    }).isRequired,
+    setRange: PropTypes.func.isRequired,
+  };
 
   return (
     <div className="max-w-full" ref={dropdownRef}>
